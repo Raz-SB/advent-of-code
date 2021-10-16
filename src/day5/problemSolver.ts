@@ -1,7 +1,7 @@
 import input from './input';
 
 const NUMBER_OF_ROWS = 128;
-const INITIAL_RANGE = {min: 0, max: NUMBER_OF_ROWS - 1};
+const INITIAL_RANGE: Range = {min: 0, max: NUMBER_OF_ROWS - 1};
 
 enum RowPartition {
     F = 'Front',
@@ -32,8 +32,22 @@ const parseInputAsCases: () => string[] = () => {
     return input.split('\n')
 };
 
+const figureOutWhichSeatItIs = (seatInstructions: SeatPartition[], INITIAL_RANGE: Range) => {
+    // TODO: Implement
+};
+
+const figureOutRowAndSeat = ({rowInstructions, seatInstructions}) => {
+    return ({
+        row: figureOutRowRecursively(rowInstructions, INITIAL_RANGE),
+        seat: figureOutWhichSeatItIs(seatInstructions, INITIAL_RANGE)
+    });
+};
+
+
 export const solveProblem = () => {
-    let cases = parseInputAsCases();
+    return parseInputAsCases()
+        .map(parseOutInstructions)
+        .map(figureOutRowAndSeat)
 }
 
 const parseOutInstructions = (input: string): { rowInstructions: RowPartition[], seatInstructions: SeatPartition[] } => {
@@ -46,16 +60,17 @@ const parseOutInstructions = (input: string): { rowInstructions: RowPartition[],
     }
 };
 
-const figureOutRowRecursively = (rowInstructions: RowPartition[], range: Range) => {
-    if (range.min === range.max) {
-        return range.min
-    }
-    const [nextInstruction, ...restOfInstructions] = rowInstructions
-    if (nextInstruction) {
-        const newRange = bisectRange(nextInstruction, range);
-        return figureOutRowRecursively(restOfInstructions, newRange)
+const figureOutRowRecursively = (rowInstructions: RowPartition[], currentRange: Range) => {
+    if (currentRange.min !== currentRange.max) {
+        const [nextInstruction, ...restOfInstructions] = rowInstructions
+        if (nextInstruction) {
+            const newRange = bisectRange(nextInstruction, currentRange);
+            return figureOutRowRecursively(restOfInstructions, newRange)
+        } else {
+            new Error('could not figure out exact row')
+        }
     } else {
-        new Error('could not figure out exact row')
+        return currentRange.min
     }
 }
 
