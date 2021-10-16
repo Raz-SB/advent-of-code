@@ -1,4 +1,4 @@
-import { parsePassportInfo, PassportInfo, validatePassport } from "../problems";
+import { parsePassportInfo, PassportInfo, validateProblem1 } from "../problems";
 import { readFile } from '../../utils/dataReader';
 
 describe('day 4', () => {
@@ -22,13 +22,13 @@ describe('day 4', () => {
             requiredFields.forEach(field => {
                 it(`should be invalid if ${field} is missing`, () => {
                     delete validPassport[field]
-                    const isValid = validatePassport(validPassport)
+                    const isValid = validateProblem1(validPassport)
                     expect(isValid).toBeFalsy()
                 });
             })
 
             it('should be valid if all required fields present', () => {
-                expect(validatePassport(validPassport)).toBeTruthy()
+                expect(validateProblem1(validPassport)).toBeTruthy()
             });
 
         });
