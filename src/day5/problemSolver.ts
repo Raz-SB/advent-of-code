@@ -1,11 +1,13 @@
 import input from './input';
 
 const NUMBER_OF_ROWS = 128;
-const INITIAL_RANGE: Range = {min: 0, max: NUMBER_OF_ROWS - 1};
+const NUMBER_OF_SEATS = 8;
+const INITIAL_RANGE_ROWS: Range = {min: 0, max: NUMBER_OF_ROWS - 1};
+const INITIAL_RANGE_SEATS: Range = {min: 0, max: NUMBER_OF_SEATS - 1};
 
 enum RowPartition {
-    F = 'Front',
-    B = 'Back'
+    F = 'Left',
+    B = 'Right'
 }
 
 enum SeatPartition {
@@ -13,18 +15,41 @@ enum SeatPartition {
     R = 'Right'
 }
 
+type PartitionInstructions = SeatPartition | RowPartition
+
 type Range = {
     min: number
     max: number
 }
 
+type SeatAssignment = { seat: number; row: number };
 
-const bisectFunctions = {
-    'Front': (range: Range) => ({...range, max: Math.floor(range.max - (range.max - range.min) / 2)}),
-    'Back': (range: Range) => ({...range, min: Math.ceil(range.min + ((range.max - range.min) / 2))})
+export const findHighestSeatId = () => {
+    const seatIds: number[] = parseInputAsCases()
+        .map(figureOutSeatAssignment)
+        .map(calculateSeatId);
+
+    return Math.max(...seatIds)
 }
 
-const bisectRange = (instruction: RowPartition, range: Range): Range => {
+const figureOutWhichSeatIsMine = (seatIds: number[]): number => {
+    return seatIds.find(seat => !seatIds.includes(seat + 1) && seatIds.includes(seat + 2)) + 1
+}
+
+export const findMySeat = (): number => {
+    const seatIds: number[] = parseInputAsCases()
+        .map(figureOutSeatAssignment)
+        .map(calculateSeatId);
+
+    return figureOutWhichSeatIsMine(seatIds)
+}
+
+const bisectFunctions = {
+    'Left': (range: Range) => ({...range, max: Math.floor(range.max - (range.max - range.min) / 2)}),
+    'Right': (range: Range) => ({...range, min: Math.ceil(range.min + ((range.max - range.min) / 2))})
+}
+
+const bisectRange = (instruction: PartitionInstructions, range: Range): Range => {
     return bisectFunctions[instruction](range);
 }
 
@@ -32,22 +57,14 @@ const parseInputAsCases: () => string[] = () => {
     return input.split('\n')
 };
 
-const figureOutWhichSeatItIs = (seatInstructions: SeatPartition[], INITIAL_RANGE: Range) => {
-    // TODO: Implement
-};
+export const calculateSeatId = (seatAssignment: SeatAssignment): number => (seatAssignment.row * 8) + seatAssignment.seat;
 
-const figureOutRowAndSeat = ({rowInstructions, seatInstructions}) => {
+export const figureOutSeatAssignment: (problems: string) => SeatAssignment = (problems: string) => {
+    let {rowInstructions, seatInstructions} = parseOutInstructions(problems);
     return ({
-        row: figureOutRowRecursively(rowInstructions, INITIAL_RANGE),
-        seat: figureOutWhichSeatItIs(seatInstructions, INITIAL_RANGE)
+        row: findPositionRecursively(rowInstructions, INITIAL_RANGE_ROWS),
+        seat: findPositionRecursively(seatInstructions, INITIAL_RANGE_SEATS)
     });
-};
-
-
-export const solveProblem = () => {
-    return parseInputAsCases()
-        .map(parseOutInstructions)
-        .map(figureOutRowAndSeat)
 }
 
 const parseOutInstructions = (input: string): { rowInstructions: RowPartition[], seatInstructions: SeatPartition[] } => {
@@ -60,12 +77,12 @@ const parseOutInstructions = (input: string): { rowInstructions: RowPartition[],
     }
 };
 
-const figureOutRowRecursively = (rowInstructions: RowPartition[], currentRange: Range) => {
+const findPositionRecursively = (rowInstructions: Array<PartitionInstructions>, currentRange: Range) => {
     if (currentRange.min !== currentRange.max) {
         const [nextInstruction, ...restOfInstructions] = rowInstructions
         if (nextInstruction) {
             const newRange = bisectRange(nextInstruction, currentRange);
-            return figureOutRowRecursively(restOfInstructions, newRange)
+            return findPositionRecursively(restOfInstructions, newRange)
         } else {
             new Error('could not figure out exact row')
         }
@@ -74,12 +91,7 @@ const figureOutRowRecursively = (rowInstructions: RowPartition[], currentRange: 
     }
 }
 
-const figureOutRowIteratively = (rowInstructions: RowPartition[], range: Range) => {
+const findPositionIteratively = (rowInstructions: PartitionInstructions[], range: Range) => {
     return rowInstructions.reduce((acc, curr) => bisectRange(curr, acc),
         range).min
-}
-
-export const figureOutWhichRowItIs = (input: string): number => {
-    const {rowInstructions} = parseOutInstructions(input)
-    return figureOutRowRecursively(rowInstructions, INITIAL_RANGE)
 }
