@@ -1,5 +1,5 @@
 import { parsePassportInfo, PassportInfo, validateProblem1 } from "../problems";
-import { readFile } from '../../utils/dataReader';
+import { readFile } from '../../../utils/dataReader';
 
 describe('day 4', () => {
     describe('validate passport', () => {

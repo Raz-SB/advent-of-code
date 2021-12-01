@@ -1,4 +1,4 @@
-import { readFile } from '../utils/dataReader';
+import { readFile } from '../../utils/dataReader';
 import * as yup from 'yup';
 
 export type PassportInfo = {
