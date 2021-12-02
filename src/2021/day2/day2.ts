@@ -1,74 +1,51 @@
 import {splitLines} from "../../utils/dataReader";
 
+type Command = 'forward' | 'up' | 'down'
+
 type Position = {
     distance: number;
     depth: number;
     aim: number;
 }
 
-const moveForward = (currentPosition: Position, amount: number): Position => ({
-    ...currentPosition,
-    distance: currentPosition.distance + amount
-})
+type CommandHandlers = {
+    [command in Command]: (startPosition: Position, amount) => Position
+}
 
-const goDown = (currentPosition: Position, amount: number): Position => ({
-    ...currentPosition,
-    depth: currentPosition.depth + amount
-})
-
-const moveForwardUsingAim = (currentPosition: Position, amount: number): Position => ({
-    ...currentPosition,
+const moveForward = (useAim: boolean) => (currentPosition: Position, amount: number): Position => ({
+    ...(currentPosition),
     distance: currentPosition.distance + amount,
-    depth: currentPosition.depth + (currentPosition.aim * amount)
+    depth: useAim ? currentPosition.depth + (currentPosition.aim * amount) : currentPosition.depth
 })
 
-const goUp = (currentPosition: Position, amount: number): Position => ({
-    ...currentPosition,
-    depth: currentPosition.depth - amount
+const goDown = (useAim: boolean) => (currentPosition: Position, amount: number): Position => ({
+    ...(currentPosition),
+    aim: useAim ? currentPosition.aim + amount : currentPosition.aim,
+    depth: useAim ? currentPosition.depth : currentPosition.depth + amount
 })
 
-const aimUp = (currentPosition: Position, amount: number): Position => ({
-    ...currentPosition,
-    aim: currentPosition.aim - amount
+const goUp = (useAim: boolean) => (currentPosition: Position, amount: number): Position => ({
+    ...(currentPosition),
+    aim: useAim ? currentPosition.aim - amount : currentPosition.aim,
+    depth: useAim ? currentPosition.depth : currentPosition.depth - amount
 })
 
-const aimDown = (currentPosition: Position, amount: number): Position => ({
-    ...currentPosition,
-    aim: currentPosition.aim + amount
+const commandHandlers = (useAim?: boolean): CommandHandlers => ({
+    'forward': moveForward(useAim),
+    'down': goDown(useAim),
+    'up': goUp(useAim)
 })
 
-const commandsByDirection = {
-    'forward': moveForward,
-    'down': goDown,
-    'up': goUp
-}
+export const solveProblem1 = (data: string): number => solveProblem(data, commandHandlers())
 
-const commandsUsingAim = {
-    'forward': moveForwardUsingAim,
-    'down': aimDown,
-    'up': aimUp
-}
+export const solveProblem2 = (data: string): number => solveProblem(data, commandHandlers(true))
 
-
-export const handleCommand = (currentPosition: Position, command: string): Position => {
-    const [direction, amount] = command.split(' ')
-    return commandsByDirection[direction](currentPosition, Number.parseInt(amount));
-}
-
-export const handleCommandUsingAim = (currentPosition: Position, command: string): Position => {
-    const [direction, amount] = command.split(' ')
-    return commandsUsingAim[direction](currentPosition, Number.parseInt(amount));
-}
-
-export const solveProblem1 = (data: string): number => {
+const solveProblem = (data: string, commandHandlers: CommandHandlers) => {
     const instructions = splitLines(data);
-    const finalPosition =  instructions
-        .reduce((prev, curr) => handleCommand(prev, curr), {distance: 0, depth: 0} as Position);
-    return finalPosition.depth * finalPosition.distance
-}
-
-export const solveProblem2 = (data: string): number => {
-    const instructions = splitLines(data);
-    const finalPosition =  instructions.reduce((prev, curr) => handleCommandUsingAim(prev, curr), {distance: 0, depth: 0, aim: 0} as Position);
+    const finalPosition = instructions
+        .map(instruction => {
+            const [command, amountAsString] = instruction.split(' ')
+            return {commandHandler: commandHandlers[command], amount: Number.parseInt(amountAsString)}
+        }).reduce((prev, curr) => curr.commandHandler(prev, curr.amount), {distance: 0, depth: 0, aim: 0} as Position);
     return finalPosition.depth * finalPosition.distance
 }
