@@ -1,14 +1,9 @@
-import {countIncreases, parseInput, threeples} from "../day1";
+import {countIncreases, solveProblem1, solveProblem2, threeples} from "../day1";
 import {data} from "../data";
 import {sum} from "../../../utils/listOps";
+import {parseNumbers} from "../../../utils/dataReader";
 
 describe('day1', function () {
-
-    describe('parseInput', function () {
-        it('should convert input to array of numbers', function () {
-            expect(parseInput(data)).toHaveLength(2000);
-        });
-    });
 
     describe('countIncreases', function () {
         it('should return count of elements that are more than the previous', function () {
@@ -35,15 +30,13 @@ describe('day1', function () {
 
     describe('problem 1', function () {
         it('should count number of increases in dataset', function () {
-            const result = countIncreases(parseInput(data));
-            expect(result).toEqual(1195);
+            expect(solveProblem1(data)).toEqual(1195);
         });
     });
 
     describe('problem 2', function () {
         it('should count number of increases across threeples', function () {
-            const result = countIncreases(threeples(parseInput(data)).reduce((prev, curr) => [...prev, sum(curr)], []))
-            expect(result).toEqual(1235);
+            expect(solveProblem2(data)).toEqual(1235);
         });
 
     });

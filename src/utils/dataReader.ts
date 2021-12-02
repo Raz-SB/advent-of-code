@@ -15,6 +15,9 @@ export const readFile = (fileName: string): Promise<string> => {
     });
 }
 
+export const parseNumbers = (input: string): Array<number> =>
+    splitLines(input).map(str => Number.parseInt(str))
+
 export const readLines = (fileName: string): Promise<string[]> => {
     return readFile(fileName).then(splitLines)
 }
