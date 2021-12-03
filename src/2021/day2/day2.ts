@@ -1,6 +1,8 @@
 import {splitLines} from "../../utils/dataReader";
 
-type Command = 'forward' | 'up' | 'down'
+type MovementType = 'forward' | 'up' | 'down'
+
+type Command = { command: MovementType, amount: number }
 
 type Position = {
     distance: number;
@@ -9,31 +11,25 @@ type Position = {
 }
 
 type CommandHandlers = {
-    [command in Command]: (startPosition: Position, amount) => Position
+    [command in MovementType]: (startPosition: Position, amount) => Position
 }
 
-const moveForward = (useAim: boolean) => (currentPosition: Position, amount: number): Position => ({
-    ...(currentPosition),
-    distance: currentPosition.distance + amount,
-    depth: useAim ? currentPosition.depth + (currentPosition.aim * amount) : currentPosition.depth
-})
-
-const goDown = (useAim: boolean) => (currentPosition: Position, amount: number): Position => ({
-    ...(currentPosition),
-    aim: useAim ? currentPosition.aim + amount : currentPosition.aim,
-    depth: useAim ? currentPosition.depth : currentPosition.depth + amount
-})
-
-const goUp = (useAim: boolean) => (currentPosition: Position, amount: number): Position => ({
-    ...(currentPosition),
-    aim: useAim ? currentPosition.aim - amount : currentPosition.aim,
-    depth: useAim ? currentPosition.depth : currentPosition.depth - amount
-})
-
 const commandHandlers = (useAim?: boolean): CommandHandlers => ({
-    'forward': moveForward(useAim),
-    'down': goDown(useAim),
-    'up': goUp(useAim)
+    'forward': (currentPosition: Position, amount: number): Position => ({
+        ...(currentPosition),
+        distance: currentPosition.distance + amount,
+        depth: useAim ? currentPosition.depth + (currentPosition.aim * amount) : currentPosition.depth
+    }),
+    'down': (currentPosition: Position, amount: number): Position => ({
+        ...(currentPosition),
+        aim: useAim ? currentPosition.aim + amount : currentPosition.aim,
+        depth: useAim ? currentPosition.depth : currentPosition.depth + amount
+    }),
+    'up': (currentPosition: Position, amount: number): Position => ({
+        ...(currentPosition),
+        aim: useAim ? currentPosition.aim - amount : currentPosition.aim,
+        depth: useAim ? currentPosition.depth : currentPosition.depth - amount
+    })
 })
 
 export const solveProblem1 = (data: string): number => solveProblem(data, commandHandlers())
