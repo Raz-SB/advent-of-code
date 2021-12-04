@@ -40,7 +40,7 @@ const epsilonRate = (bits: Array<string>): number => {
 }
 
 const solveProblem1 = (data: string): number => {
-    const rawDiagnostics =  splitLines(data)
+    const rawDiagnostics = splitLines(data)
     const dianosticReport = {
         gamma: gammaRate(rawDiagnostics),
         epsilon: epsilonRate(rawDiagnostics)
@@ -48,4 +48,34 @@ const solveProblem1 = (data: string): number => {
     return getPowerConsumption(dianosticReport)
 }
 
-export {DiagnosticReport, getBitsByPosition, getMostCommonBit, gammaRate, epsilonRate, solveProblem1}
+const solveProblem2 = (data: string): number => {
+    const rawDiagnostics = splitLines(data)
+    const oxygenGeneratorRating = getOxygenGeneratorRating(rawDiagnostics)
+    let co2ScrubberRating = getCo2ScrubberRating(rawDiagnostics);
+    return lifeSupportRating(oxygenGeneratorRating, co2ScrubberRating)
+}
+
+export const getCo2ScrubberRating = (data: Array<string>): number => {
+    let strings = fillArray(data[0].length).reduce((prev, curr) => {
+        if (prev.length === 1) return prev;
+        let bitsByPosition = getBitsByPosition(prev, curr);
+        let leastCommonBit = getLeastCommonBit(bitsByPosition)
+        return prev.filter(d => Number.parseInt(d[curr]) === leastCommonBit)
+    }, data);
+    return Number.parseInt(strings.join(''), 2)
+}
+
+export const getOxygenGeneratorRating = (data: Array<string>): number => {
+    let strings = fillArray(data[0].length).reduce((prev, curr) => {
+        if (prev.length === 1) return prev;
+        let bitsByPosition = getBitsByPosition(prev, curr);
+        let mostCommonBit = getMostCommonBit(bitsByPosition)
+        return prev.filter(d => Number.parseInt(d[curr]) === mostCommonBit)
+    }, data);
+    return Number.parseInt(strings.join(''), 2)
+}
+
+
+export const lifeSupportRating = (oxygenGeneratorRating: number, co2ScrubberRating): number => oxygenGeneratorRating * co2ScrubberRating
+
+export {DiagnosticReport, getBitsByPosition, getMostCommonBit, gammaRate, epsilonRate, solveProblem1, solveProblem2}

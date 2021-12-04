@@ -1,5 +1,12 @@
 import {splitLines} from "../../../utils/dataReader";
-import {epsilonRate, gammaRate, getBitsByPosition, getMostCommonBit, solveProblem1} from "../day3";
+import {
+    epsilonRate,
+    gammaRate,
+    getBitsByPosition, getCo2ScrubberRating,
+    getMostCommonBit,
+    getOxygenGeneratorRating,
+    solveProblem1, solveProblem2
+} from "../day3";
 import {data} from "../data";
 
 describe('Day 3', function () {
@@ -22,6 +29,7 @@ describe('Day 3', function () {
 
             rawDiagnostics = splitLines(testData);
         });
+
         describe('getBitsByPosition', function () {
             it('should return array of all bits in a given position', function () {
                 let bitsByPosition = getBitsByPosition(rawDiagnostics, 4);
@@ -50,13 +58,38 @@ describe('Day 3', function () {
                 expect(epsilonRate(rawDiagnostics)).toEqual(9)
             });
         });
+
+        describe('get oxygen generator rating', function () {
+            it('should do the thing', function () {
+                let oxygenGeneratorRating = getOxygenGeneratorRating(rawDiagnostics);
+                expect(oxygenGeneratorRating).toEqual(23)
+            });
+        });
+
+        describe('get co2 scrubber rating', function () {
+            it('should do the thing', function () {
+                let co2ScrubberRating = getCo2ScrubberRating(rawDiagnostics);
+                expect(co2ScrubberRating).toEqual(10)
+            });
+        });
     });
 
     describe('problem 1', function () {
         it('should generate diagnostic report and multiply numbers together', function () {
-            const result  = solveProblem1(data)
+            const result = solveProblem1(data)
             expect(result).toEqual(3912944)
         });
 
     });
+
+    describe('problem 2', function () {
+        it('should calculate life support rating', function () {
+            const result = solveProblem2(data)
+            expect(result).toEqual(4996233)
+        });
+
+    });
+
+
 });
+
