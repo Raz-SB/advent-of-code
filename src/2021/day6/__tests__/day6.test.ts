@@ -116,11 +116,9 @@ After 18 days: 6,0,6,4,5,6,0,1,1,2,6,0,1,1,1,2,2,3,3,4,6,7,8,8,8,8`
                                 seaFloor.tick(eachCase.amountOfDays);
                                 // const result =  seaFloor.allFishTimers()
                                 expect(seaFloor.amountOfFish()).toEqual(eachCase.expectedFish)
-
                             });
                         })
                     })
-
                 });
                 it('should tick by a larger amount', function () {
                     const seaFloor = new School([3, 4, 3, 1, 2])
@@ -135,11 +133,8 @@ After 18 days: 6,0,6,4,5,6,0,1,1,2,6,0,1,1,1,2,2,3,3,4,6,7,8,8,8,8`
                     const result = seaFloor.allFishTimers()
                     expect(seaFloor.amountOfFish()).toEqual(26984457539)
                 });
-
             });
-
         });
-
     });
 
     describe('problems', function () {

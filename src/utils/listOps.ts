@@ -3,3 +3,7 @@ export const sum = (nums: Array<number>) => {
 }
 
 export const fillArray  = (length: number) => Array(length).fill(null).map((_,index) => index)
+
+export const fillRange = (min: number, max: number) => Array(++max - min)
+    .fill(null)
+    .map((_, i) => min+i)
