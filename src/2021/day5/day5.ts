@@ -21,9 +21,23 @@ export const isVertical = (line: Line): boolean => line.a.x === line.b.x
 
 export const isHorizontal = (line: Line): boolean => line.a.y === line.b.y
 
+const isForwardDiagonal = (line: Line) => line.a.x === line.a.y && line.b.x == line.b.y;
+
+const isReverseDiagonal = (line: Line) => line.a.x === line.b.y && line.b.x == line.a.y;
+
+export const isDiagonal = (line: Line): boolean =>
+    isForwardDiagonal(line) ||
+    isReverseDiagonal(line)
+
 export const isInBetween = (someValue: number, otherValues: number[]) =>
     [someValue, ...otherValues]
         .sort((a, b) => a - b)[1] === someValue
+
+const isPointOnReverseDiagonal = (point: Point, line: Line) => {
+    // y = -x + c
+    const c = line.a.y + line.a.x
+    return point.y === c - point.x
+}
 
 export const isPointOnLine = (point: Point, line: Line): boolean => {
     return (isHorizontal(line)
@@ -32,6 +46,12 @@ export const isPointOnLine = (point: Point, line: Line): boolean => {
         || (isVertical(line)
             && point.x === line.a.x
             && isInBetween(point.y, [line.a.y, line.b.y]))
+        || // assume diagonal
+        (isInBetween(point.x, [line.a.x, line.b.x])
+            && isInBetween(point.y, [line.a.y, line.b.y])
+        && ((isForwardDiagonal(line) && point.x === point.y) ||
+                    isReverseDiagonal(line) && isPointOnReverseDiagonal(point, line)
+        ))
 }
 
 export const parseInput = (data: string): Array<Line> => {
@@ -48,71 +68,25 @@ export const countOverlaps = (point: Point, lines: Array<Line>): number =>
     lines.reduce((prev, line) => isPointOnLine(point, line) ? prev + 1 : prev, 0)
 
 export const solveTheDamnThing = (allHorizontalOrVerticalLines: Array<Line>) => {
+    const maxX = Math.max(...allHorizontalOrVerticalLines.reduce((prev, curr) => {
+        return [...prev, curr.a.x, curr.b.x]
+    }, [])) + 1
+    const maxY = Math.max(...allHorizontalOrVerticalLines.reduce((prev, curr) => {
+        return [...prev, curr.a.y, curr.b.y]
+    }, [])) + 1
 
-    // const maxX = Math.max(...allHorizontalOrVerticalLines.reduce((prev, curr) => {
-    //     return [...prev, curr.a.x, curr.b.x]
-    // }, [])) + 1
-    // const maxY = Math.max(...allHorizontalOrVerticalLines.reduce((prev, curr) => {
-    //     return [...prev, curr.a.y, curr.b.y]
-    // }, [])) + 1
-    //
-    const maxX = 1000
-    const maxY = 1000
-    //
-    const doesPointHave2OrMoreOverlaps = (p: Point, lines: Array<Line>): boolean => {
-        const pointsWithOverlaps = {}
-        let linesRemaining = allHorizontalOrVerticalLines.length;
-        let overlaps = 0;
-        while (linesRemaining && overlaps < 2) {
-            if (isPointOnLine(p, allHorizontalOrVerticalLines[--linesRemaining])) {
-                overlaps++
-                let pointKey = `${p.x}:${p.y}`;
-                pointsWithOverlaps[pointKey] = (pointsWithOverlaps[pointKey] || 0) + 1
-            }
-
-            if (overlaps == 2) {
-                return true
-            }
-        }
-        return false;
-    }
-
-    let points = fillArray(maxX)
-        .reduce((pointsArray, x) => [...pointsArray, ...fillArray(maxY).map(y => point(x, y))], [] as Array<Point>);
-    let filter = points
-        .filter(pt => countOverlaps(pt, allHorizontalOrVerticalLines) >= 2);
-
-    // let pointMap = filter.reduce((prev, curr) => {
-    //     let pointKey = `${curr.x}:${curr.y}`;
-    //     prev[pointKey] =  (prev[pointKey] || 0) + 1
-    //     return prev
-    // }, {});
-    // console.log(pointMap)
-    return filter.length
+    return fillArray(maxX)
+        .reduce((pointsArray, x) =>
+            [...pointsArray, ...fillArray(maxY)
+                .map(y => point(x, y))], [])
+        .filter(pt => countOverlaps(pt, allHorizontalOrVerticalLines) >= 2).length
 };
 
-export const solveProblem1 = (data: string): number => {
-    const allHorizontalOrVerticalLines = parseInput(data)
-    .filter(line => isVertical(line) || isHorizontal(line));
-    return solveTheDamnThing(allHorizontalOrVerticalLines);
-
-// return allPoints.reduce((overlappingPoints, pt) => {
-//     const hasMoreThan2Overlaps = allHorizontalOrVerticalLines.reduce((overlapCount, line) => {
-//         if (overlapCount < 2) {
-//             if (isPointOnLine(pt, line)) {
-//                 return overlapCount + 1
-//             }
-//         }
-//         return overlapCount
-//     }, 0)
-//     if (hasMoreThan2Overlaps) {
-//         return [...overlappingPoints, pt]
-//     } else return overlappingPoints
-// }, []).length
-
-// return allPoints.map(pt => {
-//     const overlaps = allHorizontalOrVerticalLines.filter(eachLine => isPointOnLine(pt, eachLine)).length
-//     console.log("point %o overlaps %d times", pt, overlaps)
-//     return {point: pt, overlaps}
-// }).filter(pt => pt.overlaps >= 2).length
+export const solveProblem = (data: string, includeDiagonals = false): number => {
+    let lines = parseInput(data);
+    if (!includeDiagonals) {
+        lines = lines
+            .filter(line => isVertical(line) || isHorizontal(line));
+    }
+    return solveTheDamnThing(lines);
 }

@@ -6,13 +6,12 @@ import {
     Line,
     point,
     parseInput,
-    solveProblem1,
+    solveProblem,
     solveTheDamnThing, countOverlaps, isInBetween
 } from "../day5";
 import {data} from "../data";
 
 describe('Day 5', function () {
-
     describe('horizontal lines', function () {
         it('should be false if line is not horizontal', function () {
             const result = isHorizontal(line(3, 5, 6, 2))
@@ -33,6 +32,7 @@ describe('Day 5', function () {
             expect(result).toBeTruthy()
         });
     });
+
 
     describe('determining whether a point has an overlap', function () {
         let lines: Array<Line>
@@ -63,6 +63,27 @@ describe('Day 5', function () {
 
             it('should be 0 for 15,9', function () {
                 expect(countOverlaps(point(15, 9), lines)).toEqual(0)
+            });
+
+            describe('diagonal lines', function () {
+                /*
+                An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
+                An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
+                 */
+                it('should be true for 1,1', function () {
+                    const result = isPointOnLine(point(1, 1), line(1, 1, 3, 3))
+                    expect(result).toBeTruthy()
+                });
+
+                it('should be true when point is on reverse diagonal', function () {
+                    const result = isPointOnLine(point(2,4), line(1,5,5,1))
+                    expect(result).toBeTruthy()
+                });
+
+                it('should be false when point is not on reverse diagonal', function () {
+                    const result = isPointOnLine(point(3,4), line(1,5,5,1))
+                    expect(result).toBeFalsy()
+                });
             });
 
         });
@@ -115,7 +136,7 @@ describe('Day 5', function () {
 
 
         it('should solve', function () {
-            const result = solveProblem1(data)
+            const result = solveProblem(data)
             expect(result).toEqual(6687)
         });
 
@@ -123,5 +144,13 @@ describe('Day 5', function () {
             let number = solveTheDamnThing(lines);
             expect(number).toEqual(5)
         });
+    });
+
+    describe('problem 2', function () {
+        it('should include diagonals', function () {
+            let result = solveProblem(data, true);
+            expect(result).toEqual(19851)
+        });
+
     });
 });
