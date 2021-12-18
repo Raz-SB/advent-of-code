@@ -54,7 +54,7 @@ b-end`
             });
             it('should work for large input', function () {
                 const paths = findDistinctPaths2(parseInput(data), 'start', 'end')
-                expect(paths.length).toEqual(10)
+                expect(paths.length).toEqual(120535)
             });
         });
     });

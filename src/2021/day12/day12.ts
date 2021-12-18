@@ -53,7 +53,6 @@ export const parseInput = (input: string): Path[] => {
 export const findDistinctPaths = (connections: Path[], startCave: string, endCave: string) => {
     const allPaths: string[][] = [[]]
     const buildPaths = (currentPath: string[], startCave: string) => {
-        // allPaths.forEach(existingPath => existingPath.push(startCave))
         const newPath = [...currentPath, startCave]
         allPaths.push(newPath)
 
@@ -62,7 +61,6 @@ export const findDistinctPaths = (connections: Path[], startCave: string, endCav
             .filter(connectingCaves => isBig(connectingCaves) || isUnvisited(newPath, connectingCaves))
 
         cavesFromStarCave.forEach(connCave => {
-            // allPaths.forEach(existingPath => existingPath.push(connCave))
             buildPaths(newPath, connCave)
         })
     }
@@ -76,7 +74,6 @@ export const findDistinctPaths = (connections: Path[], startCave: string, endCav
 export const findDistinctPaths2 = (connections: Path[], startCave: string, endCave: string) => {
     const allPaths: string[][] = [[]]
     const buildPaths = (currentPath: string[], startCave: string) => {
-        // allPaths.forEach(existingPath => existingPath.push(startCave))
         const newPath = [...currentPath, startCave]
         allPaths.push(newPath)
 
@@ -86,14 +83,12 @@ export const findDistinctPaths2 = (connections: Path[], startCave: string, endCa
                 .filter(connectingCaves => isBig(connectingCaves) || canVisit(newPath, connectingCaves))
 
             cavesFromStarCave.forEach(connCave => {
-                // allPaths.forEach(existingPath => existingPath.push(connCave))
                 buildPaths(newPath, connCave)
             })
         }
     }
     buildPaths([], startCave)
     let fullPaths = allPaths.filter(path => path.pop() === endCave);
-    console.log(fullPaths.join(',end\n'))
     return fullPaths;
 };
 
