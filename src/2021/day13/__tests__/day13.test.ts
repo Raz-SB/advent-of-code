@@ -75,7 +75,7 @@ describe('Day 13', function () {
             const grid = solveProblem2(data)
             grid.print('  ')
             const numberOfDots = countDots(grid)
-            expect(numberOfDots).toEqual(17)
+            expect(numberOfDots).toEqual(97)
         });
 
     });

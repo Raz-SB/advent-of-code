@@ -73,14 +73,10 @@ export const parseFoldInstructions = (input: string): { axis: 'x' | 'y', foldPoi
 export const solveProblem2 = (input: string): Grid<GridContents> => {
     let grid = toGrid(toPoints(input))
     const foldInstructions = parseFoldInstructions(input)
+    const foldOperation = { x: foldLeft, y: foldUp }
 
     foldInstructions.forEach(instruction => {
-        if (instruction.axis === 'x') {
-            grid = foldLeft(grid, instruction.foldPoint)
-        }
-        if (instruction.axis === 'y') {
-            grid = foldUp(grid, instruction.foldPoint)
-        }
+        grid = foldOperation[instruction.axis](grid, instruction.foldPoint)
     })
 
     return grid;
