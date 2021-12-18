@@ -43,16 +43,16 @@ export function foldUp(grid: Grid<GridContents>, foldPoint: number): Grid<GridCo
 export function foldLeft(grid: Grid<GridContents>, foldPoint: number): Grid<GridContents> {
     let leftHalf = grid.rows.map(eachRow => eachRow.slice(0, foldPoint))
     let rightHalf = grid.rows.map(eachRow => eachRow.slice(foldPoint + 1))
-    const gridFromRightHalf = new Grid(rightHalf)
+    const gridFromLeftHalf = new Grid(leftHalf)
     const columnsInLeftHalf = leftHalf[0].length;
 
-    leftHalf.forEach((row, leftRowIndex) => row.forEach((cell, columnIndex) => {
+    rightHalf.forEach((row, rowIndex) => row.forEach((cell, columnIndex) => {
         if (cell === '#') {
-            gridFromRightHalf.setCell(new Point(leftRowIndex, columnsInLeftHalf - 1 - columnIndex), '#')
+            gridFromLeftHalf.setCell(new Point(rowIndex, columnsInLeftHalf - 1 - columnIndex), '#')
         }
     }))
 
-    return gridFromRightHalf
+    return gridFromLeftHalf
 }
 
 export const countDots = (grid: Grid<GridContents>): number => {
