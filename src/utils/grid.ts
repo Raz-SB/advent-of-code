@@ -106,8 +106,12 @@ export class Grid<T> {
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    print() {
-        const text = this.rows.join('\n')
+    setCell(point: Point, value: T) {
+      this.rows[point.row][point.column] = value
+    }
+
+    print(separator = ',') {
+        const text = this.rows.map(eachRow => eachRow.join(separator)).join('\n')
         console.log(text)
     }
 
