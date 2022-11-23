@@ -1,4 +1,4 @@
-import {getPairs, insert, insertRecursively, parseInsertionRules, problem1} from "../day14";
+import {getPairs, insert, insertRecursively, parseInsertionRules, problem1, problem2} from "../day14";
 import {pairInsertionRules, polymerTemplate} from "../data";
 
 describe('Day 14', function () {
@@ -42,7 +42,7 @@ CN -> C`
             expect(result).toEqual('NCNBCHB')
         });
 
-        describe('it should perform iterations', function () {
+        it('it should perform iterations', function () {
             const result = insertRecursively(testTemplate, parseInsertionRules(testInsertionRules), 3);
             expect(result).toEqual('NBBBCNCCNBBNBNBBCHBHHBCHB')
         });
@@ -56,7 +56,15 @@ CN -> C`
 
         it('should do the thing for large dataset', function () {
             const result = problem1(polymerTemplate, parseInsertionRules(pairInsertionRules))
-            expect(result).toEqual(3408)
+            expect(result).toEqual(2602)
+        });
+
+    });
+
+    describe.skip('problem 2', function () {
+        it('should do the thing', function () {
+            const result = problem2(testTemplate, parseInsertionRules(testInsertionRules))
+            expect(result).toEqual(1588)
         });
 
     });
