@@ -11,6 +11,14 @@ export class Point {
     public get column() {
         return this._column
     }
+
+    equals(other: Point): boolean {
+        return this.row === other.row && this.column === other.column
+    }
+
+    toString(): string {
+        return `(${this.row},${this.column})`
+    }
 }
 
 type PointAndValue<T> = {
@@ -46,61 +54,81 @@ export class Grid<T> {
         })
     }
 
-    getAdjacentPoints(point: Point): PointAndValue<T>[] {
-        return [
-           this.getPointAbove(point),
-           this.getPointAboveRight(point),
-           this.getPointRight(point),
-           this.getPointBelowRight(point),
-           this.getPointBelow(point),
-           this.getPointBelowLeft(point),
-           this.getPointLeft(point),
-           this.getPointAboveLeft(point)
-        ].filter(x => x.value !== undefined)
+    allPoints(): Point[] {
+        let ts = this.rows.reduce((prev, row, rowIndex) => {
+            const points = row.map((_, columnIndex) => new Point(rowIndex, columnIndex))
+            return [...prev, ...points]
+        }, []);
+        return ts as Point[];
     }
 
-    private getPointAbove(point: Point) {
+    getPointValue(point: Point): T {
+        return this.rows[point.row][point.column]
+    }
+
+    getAdjacentPoints(point: Point, includeDiagonallyAdjacentCells = true): PointAndValue<T>[] {
+        let adjacentCells;
+
+        let laterallyAdjacent = [
+            this.getPointAbove(point),
+            this.getPointRight(point),
+            this.getPointBelow(point),
+            this.getPointLeft(point),
+        ];
+
+        adjacentCells = [...laterallyAdjacent];
+
+        if (includeDiagonallyAdjacentCells) {
+            const diagonallyAdjacent = [this.getPointAboveLeft,
+                this.getPointAboveRight, this.getPointBelowRight, this.getPointBelowLeft].map(fn => fn(point));
+            adjacentCells = [...adjacentCells, diagonallyAdjacent ];
+        }
+
+        return adjacentCells.filter(x => x.value !== undefined)
+    }
+
+    getPointAbove(point: Point) {
         let row = point.row - 1;
         let column = point.column;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointAboveRight(point: Point) {
+    getPointAboveRight(point: Point) {
         let row = point.row -1;
         let column = point.column + 1;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointRight(point: Point) {
+    getPointRight(point: Point) {
         let row = point.row;
         let column = point.column + 1;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointBelowRight(point: Point) {
+    getPointBelowRight(point: Point) {
         let row = point.row +1; let column = point.column + 1;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointBelow(point: Point) {
+    getPointBelow(point: Point) {
         let row = point.row + 1;
         let column = point.column;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointBelowLeft(point: Point) {
+    getPointBelowLeft(point: Point) {
         let row = point.row + 1;
         let column = point.column -1;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointLeft(point: Point) {
+    getPointLeft(point: Point) {
         let row = point.row;
         let column = point.column - 1;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
     }
 
-    private getPointAboveLeft(point: Point) {
+    getPointAboveLeft(point: Point) {
         let row = point.row - 1;
         let column = point.column - 1;
         return { value: this.rows[row]?.[column], point: new Point(row, column) };
