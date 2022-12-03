@@ -1,3 +1,5 @@
+import {intersection, uniq} from "lodash";
+
 export const decodeChar = (char: string): number => {
     const charCode = char.charCodeAt(0)
     return charCode > 96 ? charCode - 96 : charCode - 38
@@ -13,9 +15,38 @@ class Compartment {
     }
 }
 
+const groupBy = <T>(grouping: number, input: Array<T>) => {
+    return input.reduce((acc, item, index) => {
+        if (index % grouping === 0) {
+            acc.push([])
+        }
+        acc[acc.length - 1].push(item)
+        return acc
+    }, [] as Array<Array<T>>);
+}
+
+export class ElfGroups {
+    public readonly groups: Array<Array<Rucksack>>;
+    constructor(rucksacks: Array<Rucksack>) {
+        this.groups = groupBy(3, rucksacks) as Array<Array<Rucksack>>
+    }
+
+    sumOfPriorities() {
+        return this.groups.reduce((acc, group) => {
+            let commonItems = findCommonItems(group);
+            let number = commonItems.map(item => decodeChar(item)).reduce((acc, item) => acc + item, 0);
+            return acc + number
+        }, 0)
+    }
+}
+
+export const findCommonItems = (group: Array<Rucksack>): Array<string> => {
+    return intersection(...group.map(eachGroup => eachGroup.contents.split('')))
+}
+
 export class Rucksack {
     private readonly _compartments: Compartment[] = [];
-    constructor(contents: string) {
+    constructor(public readonly contents: string) {
         const [firstHalf, secondHalf] = splitInHalf(contents)
         this._compartments = [new Compartment(firstHalf), new Compartment(secondHalf)]
     }
