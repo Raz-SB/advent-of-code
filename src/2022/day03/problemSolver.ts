@@ -1,4 +1,5 @@
 import {intersection, uniq} from "lodash";
+import {groupBy} from "../../utils/listOps";
 
 export const decodeChar = (char: string): number => {
     const charCode = char.charCodeAt(0)
@@ -13,16 +14,6 @@ const splitInHalf = (input: string): Array<string> => {
 class Compartment {
     constructor(public readonly contents: string) {
     }
-}
-
-const groupBy = <T>(grouping: number, input: Array<T>) => {
-    return input.reduce((acc, item, index) => {
-        if (index % grouping === 0) {
-            acc.push([])
-        }
-        acc[acc.length - 1].push(item)
-        return acc
-    }, [] as Array<Array<T>>);
 }
 
 export class ElfGroups {
