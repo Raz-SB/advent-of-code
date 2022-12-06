@@ -8,11 +8,6 @@ export type MoveOperation = {
     to: string
 }
 
-export type BoxStack = {
-    id: string
-    boxes: Array<string>
-}
-
 export type Instructions = {
     initialState: any | BoxStacks
     operations: any | Array<MoveOperation>
@@ -36,9 +31,9 @@ export const parseRawState = (rawState: string): BoxStacks => {
         .reduce((acc, id, index) => {
             acc[id] = []
             return acc
-        }, {})
+        }, {});
 
-    const s = (boxStacks as string[][]).forEach((stack, index) => {
+    (boxStacks as string[][]).forEach((stack, index) => {
         stack.map(eachColumn => eachColumn[1]).forEach((boxId, boxIndex) => {
             if(boxId.trim()) {
                 boxIds[`${boxIndex + 1}`].push(boxId);
