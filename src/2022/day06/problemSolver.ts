@@ -1,22 +1,13 @@
-export function hasRepeatedCharacters(testInput: string | string[]) {
-    const arr = Array.isArray(testInput) ? testInput : testInput.split('')
-    const uniqueChars = new Set(arr)
-    return uniqueChars.size !== testInput.length
-}
+export const isEntirelyDistinct = (array: string[]) => new Set(array).size === array.length;
 
-export const findFirstPositionWherePreviousNCharactersWereUnique = (numberOfChars: number, testInput: string): number => {
-    return testInput.split('')
-        .reduce((acc, curr, index, array) => {
-            if(acc === -1 && index > numberOfChars -1) {
-                const previous4Chars = array.slice(index - numberOfChars, index)
-                if (!hasRepeatedCharacters(previous4Chars)) {
-                    return index
-                }
-            }
-            return acc
-        }, -1);
+export const findFirstPositionWherePreviousNCharactersWereUnique = (numberOfChars: number, input: string): number => {
+    return input.split('')
+        .slice(numberOfChars - 1) // skip the first n characters
+        .findIndex((_, index) => {
+            const previousNChars = input.slice(index, index + numberOfChars)
+            return isEntirelyDistinct(previousNChars.split(''))
+        }) + numberOfChars // re-align the index bc of the skip
 }
 
 export const problem1 = (data: string) => findFirstPositionWherePreviousNCharactersWereUnique(4, data)
 export const problem2 = (data: string) => findFirstPositionWherePreviousNCharactersWereUnique(14, data)
-

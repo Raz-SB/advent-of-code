@@ -1,4 +1,4 @@
-import {findFirstPositionWherePreviousNCharactersWereUnique, hasRepeatedCharacters} from "../problemSolver";
+import {findFirstPositionWherePreviousNCharactersWereUnique, isEntirelyDistinct} from "../problemSolver";
 import {data} from "../data";
 
 describe('day 06', function () {
@@ -7,13 +7,13 @@ describe('day 06', function () {
     describe('find marker', function () {
         describe('has repeated characters', function () {
             it('should return true for fjqj', function () {
-                const result = hasRepeatedCharacters('fjqj')
-                expect(result).toBe(true)
+                const result = isEntirelyDistinct('fjqj'.split(''))
+                expect(result).toBe(false)
             })
 
             it('should be false for wxyz', function () {
-                const result = hasRepeatedCharacters('wxyz')
-                expect(result).toBe(false)
+                const result = isEntirelyDistinct('wxyz'.split(''))
+                expect(result).toBe(true)
             });
         });
 
