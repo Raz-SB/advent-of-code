@@ -4,6 +4,12 @@ export class Point {
     constructor(private _row: number, private _column: number) {
     }
 
+    static fromString(stringPoint: string): Point {
+        const [row, column ] = stringPoint.replace('(', '').replace(')', '').split(',')
+        return new Point(parseInt(row), parseInt(column))
+    }
+
+
     public get row() {
         return this._row
     }
@@ -19,6 +25,7 @@ export class Point {
     toString(): string {
         return `(${this.row},${this.column})`
     }
+
 }
 
 type PointAndValue<T> = {

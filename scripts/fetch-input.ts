@@ -1,4 +1,8 @@
-export const fetchInput = (year: string, day: string, sessionToken: string) => {
+export const fetchInput = (year: string, day: string) => {
+    const sessionToken = process.env.AOC_SESSION_TOKEN;
+    if (!sessionToken) {
+        throw new Error('No session token found. Please set the AOC_SESSION_TOKEN environment variable.');
+    }
     return fetch(`https://adventofcode.com/${year}/day/${day}/input`, {
         "headers": {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
