@@ -43,15 +43,19 @@ export class Grid<T> {
         return this._dimensions
     }
 
-    public get rows() {
+    public get rows(): Array<Array<T>> {
         return this._rows
     }
 
-    public get columns() {
+    public get columns(): Array<Array<T>> {
         return fillArray(this.dimensions.columns)
             .map(eachColumnIndex => {
-            this.rows.map(eachRow => eachRow[eachColumnIndex])
+           return this.rows.map(eachRow => eachRow[eachColumnIndex])
         })
+    }
+
+    value(point: Point): T {
+        return this.rows[point.row]?.[point.column]
     }
 
     allPoints(): Point[] {
