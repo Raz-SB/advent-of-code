@@ -8,13 +8,12 @@ export const setupNewDay = async (basePath: string, year: string, day: string) =
         fs.mkdirSync(path, {recursive: true});
     }
 
-    fs.writeFileSync(`${path}/problemSolver.ts`, '');
-
     fetchInput(year, parseInt(day).toString())
         .then(input => {
+            fs.writeFileSync(`${path}/problemSolver.ts`, '');
             fs.writeFileSync(`${path}/data.ts`, `export const data = \`${input}\``)
+            fs.writeFileSync(`${path}/problemSolver.test.ts`, '');
+            const fileTree = tree(path, {trailingSlash: true});
+            console.log(fileTree);
         })
-    fs.writeFileSync(`${path}/problemSolver.test.ts`, '');
-    const fileTree = tree(path, {trailingSlash: true});
-    console.log(fileTree);
 }
