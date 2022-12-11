@@ -28,25 +28,32 @@ export const areTouching = (point1: Point, point2: Point): boolean => {
 
 export const problem1 = (input: string): number => {
     const instructions = parseInput(input)
-   const state = machine()
+    const state = machine(2)
     instructions.forEach(instruction => {
         state.move(instruction)
     })
 
-    return Object.keys(state.tail.pointsVisited).length
+    return Object.keys(state.knots[state.knots.length -1].pointsVisited).length
+}
+
+export const problem2 = (input: string): number => {
+    const instructions = parseInput(input)
+    const state = machine(10)
+    instructions.forEach(instruction => {
+        state.move(instruction)
+    })
+
+    return Object.keys(state.knots[state.knots.length -1].pointsVisited).length
 }
 
 
-export const machine = () => {
-    const head = {
-        position: new Point(0, 0)
-    }
-
-    const tail: {
-        position: Point,
-        pointsVisited: Record<string, number>,
-        closeDistance: (target: Point) => void
-    } = {
+type Knot = {
+    position: Point,
+    pointsVisited: Record<string, number>,
+    closeDistance: (target: Point) => void
+};
+export const machine = (numberOfKnots: number) => {
+    const knot: () => Knot = () => ({
         position: new Point(0, 0),
         pointsVisited: {[new Point(0, 0).toString()]: 1},
         closeDistance(target: Point): Point {
@@ -71,7 +78,7 @@ export const machine = () => {
                 const isUpAndLeft = target.row > from.row && target.column < from.column
                 if (isUpAndLeft) {
                     // move one step diagonally to get closer
-                    return new Point(from.row + 1, from.column -1)
+                    return new Point(from.row + 1, from.column - 1)
                 }
                 const isUpAndRight = target.row > from.row && target.column > from.column
                 if (isUpAndRight) {
@@ -83,7 +90,7 @@ export const machine = () => {
                 }
                 // else is down and right
                 const isDownAndRight = target.row < from.row && target.column > from.column
-                if(isDownAndRight) {
+                if (isDownAndRight) {
                     return new Point(from.row - 1, from.column + 1)
                 }
 
@@ -93,7 +100,7 @@ export const machine = () => {
             this.position = newPosition()
             this.pointsVisited[this.position.toString()] = (this.pointsVisited[this.position.toString()] || 0) + 1
         }
-    }
+    })
 
     const movements: {
         [key in Direction]: (point: Point) => Point
@@ -110,25 +117,39 @@ export const machine = () => {
         }
     }
 
+    const knots = Array(numberOfKnots).fill(0).map(() => knot())
+
     const move = (movement: Movement) => {
+        const [headKnot] = knots;
         for (let i = 0; i < movement.distance; i++) {
-            head.position = movements[movement.direction](head.position)
-            const pointsAreNoLongerTouching = !areTouching(head.position, tail.position)
-            if (pointsAreNoLongerTouching) {
-                tail.closeDistance(head.position)
-            }
+            headKnot.position = movements[movement.direction](headKnot.position)
+            moveKnots(headKnot, 1)
             // console.log({movement, step: i})
             // printState(6)
             // printTailMovements(6)
         }
     }
 
+    const moveKnots = (headKnot: Knot, knotIndex: number) => {
+        const nextKnot: Knot = knots[knotIndex];
+        if (nextKnot) {
+            const pointsAreNoLongerTouching = !areTouching(headKnot.position, nextKnot.position)
+            if(pointsAreNoLongerTouching) {
+                nextKnot.closeDistance(headKnot.position)
+                moveKnots(nextKnot, knotIndex + 1)
+            }
+        }
+    }
+
     const printState = (gridSize: number) => {
-        const rows = Array(gridSize).fill('.').map((_, index) => Array(gridSize).fill('.'))
+        const rows = Array(gridSize)
+            .fill('.')
+            .map((_, index) => Array(gridSize)
+                .fill('.'))
         const grid = new Grid(rows)
 
-        grid.setCell(head.position, 'H')
-        grid.setCell(tail.position, 'T')
+        grid.setCell(knots[0].position, 'H')
+        grid.setCell(knots[knots.length -1].position, 'T')
         grid.setCell(new Point(0, 0), 's')
 
         const reversedGrid = new Grid(grid.rows.reverse())
@@ -136,11 +157,11 @@ export const machine = () => {
         reversedGrid.print(' ')
     }
 
-    const printTailMovements = (gridSize: number) =>{
+    const printTailMovements = (gridSize: number) => {
         const rows = Array(gridSize).fill('.').map((_, index) => Array(gridSize).fill('.'))
         const grid = new Grid(rows)
 
-        Object.keys(tail.pointsVisited).forEach(point => {
+        Object.keys(knot.pointsVisited).forEach(point => {
             grid.setCell(Point.fromString(point), '#')
         })
         grid.setCell(new Point(0, 0), 's')
@@ -152,8 +173,7 @@ export const machine = () => {
 
     return {
         move,
-        head,
-        tail,
+        knots,
         printTailMovements
     }
 }

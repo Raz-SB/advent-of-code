@@ -1,4 +1,4 @@
-import {areTouching, machine, parseInput, problem1} from "./problemSolver";
+import {areTouching, machine, parseInput, problem1, problem2} from "./problemSolver";
 import {Point} from "../../utils/grid";
 import {data} from "./data";
 
@@ -24,7 +24,6 @@ describe('day 09', function () {
 
 
     describe('distance calculation', function () {
-
         const testCases = [
             {pointA: pt(0, 0), pointB: pt(0, 1), expectedToTouch: true},
             {pointA: pt(0, 0), pointB: pt(1, 0), expectedToTouch: true},
@@ -46,48 +45,48 @@ describe('day 09', function () {
 
     describe('movement', function () {
         it('should move right', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             stateMachine.move({direction: 'R', distance: 4})
-            expect(stateMachine.head.position).toEqual(pt(0, 4))
-            expect(stateMachine.tail.position).toEqual(pt(0, 3))
+            expect(stateMachine.knots[0].position).toEqual(pt(0, 4))
+            expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(pt(0, 3))
         });
 
         it('should move left', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             stateMachine.move({direction: 'L', distance: 3})
-            expect(stateMachine.head.position).toEqual(pt(0, -3))
-            expect(stateMachine.tail.position).toEqual(pt(0, -2))
+            expect(stateMachine.knots[0].position).toEqual(pt(0, -3))
+            expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(pt(0, -2))
         });
 
         it('should move up', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             stateMachine.move({direction: 'U', distance: 4})
-            expect(stateMachine.head.position).toEqual(pt(4, 0))
-            expect(stateMachine.tail.position).toEqual(pt(3, 0))
+            expect(stateMachine.knots[0].position).toEqual(pt(4, 0))
+            expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(pt(3, 0))
         });
 
         it('should move down', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             stateMachine.move({direction: 'D', distance: 1})
-            expect(stateMachine.head.position).toEqual(pt(-1, 0))
-            expect(stateMachine.tail.position).toEqual(pt(0, 0))
+            expect(stateMachine.knots[0].position).toEqual(pt(-1, 0))
+            expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(pt(0, 0))
         });
 
         it('should move multiple times', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             stateMachine.move({direction: 'R', distance: 4})
             stateMachine.move({direction: 'U', distance: 4})
-            expect(stateMachine.head.position).toEqual(pt(4, 4))
-            expect(stateMachine.tail.position).toEqual(pt(3, 4))
+            expect(stateMachine.knots[0].position).toEqual(pt(4, 4))
+            expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(pt(3, 4))
         });
 
         it('should move diagonally', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             stateMachine.move({direction: 'R', distance: 4})
             stateMachine.move({direction: 'U', distance: 4})
             stateMachine.move({direction: 'L', distance: 3})
-            expect(stateMachine.head.position).toEqual(pt(4, 1))
-            expect(stateMachine.tail.position).toEqual(pt(4, 2))
+            expect(stateMachine.knots[0].position).toEqual(pt(4, 1))
+            expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(pt(4, 2))
         });
 
         const testCases = [
@@ -114,19 +113,19 @@ describe('day 09', function () {
 
         testCases.forEach(({numberOfMoves, expectedPositions}) => {
             it(`should be in expected positions after ${numberOfMoves} moves`, function () {
-                const stateMachine = machine();
+                const stateMachine = machine(2);
                 const moves = parseInput(testInput).slice(0, numberOfMoves)
                 moves.forEach(move => stateMachine.move(move))
 
-                expect(stateMachine.head.position).toEqual(expectedPositions.head)
-                expect(stateMachine.tail.position).toEqual(expectedPositions.tail)
+                expect(stateMachine.knots[0].position).toEqual(expectedPositions.head)
+                expect(stateMachine.knots[stateMachine.knots.length -1].position).toEqual(expectedPositions.tail)
             });
         })
     });
 
     describe('print for debugs', function () {
         it('should print', function () {
-            const stateMachine = machine();
+            const stateMachine = machine(2);
             const moves = parseInput(testInput)
             moves.forEach(move => stateMachine.move(move))
 
@@ -142,6 +141,18 @@ describe('day 09', function () {
 
         it('should work for large dataset', function () {
             const result = problem1(data)
+            expect(result).toEqual(5858)
+        });
+    });
+
+    describe('problem 2', function () {
+        it('should calculate how many points visited for example data set', function () {
+            const result = problem2(testInput)
+            expect(result).toEqual(1)
+        });
+
+        it('should calculate how many points visited for main dataset', function () {
+            const result = problem2(data)
             expect(result).toEqual(5858)
         });
     });
