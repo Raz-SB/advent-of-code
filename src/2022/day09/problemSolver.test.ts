@@ -1,4 +1,4 @@
-import {areTouching, distanceBetweenPoints, machine, parseInput, problem1} from "./problemSolver";
+import {areTouching, machine, parseInput, problem1} from "./problemSolver";
 import {Point} from "../../utils/grid";
 import {data} from "./data";
 

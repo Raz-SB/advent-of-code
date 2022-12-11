@@ -79,7 +79,7 @@ export const machine = () => {
                 }
                 const isDownAndLeft = target.row < from.row && target.column < from.column
                 if (isDownAndLeft) {
-                    return new Point(from.row - 1, target.column - 1)
+                    return new Point(from.row - 1, from.column - 1)
                 }
                 // else is down and right
                 const isDownAndRight = target.row < from.row && target.column > from.column
@@ -93,8 +93,6 @@ export const machine = () => {
             this.position = newPosition()
             this.pointsVisited[this.position.toString()] = (this.pointsVisited[this.position.toString()] || 0) + 1
         }
-
-
     }
 
     const movements: {
